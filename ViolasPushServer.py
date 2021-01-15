@@ -12,7 +12,7 @@ from MessagePushQueue import MessagePushQueue
 logging.basicConfig(filename = "PushServer.log", level = logging.DEBUG)
 
 pgHandler = PGHandler()
-pgHandler.init(Common.TEST_DB_URL)
+pgHandler.init(Common.DB_URL)
 
 queue = MessagePushQueue()
 pl = PushLoop()
