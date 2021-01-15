@@ -1,0 +1,6 @@
+Flask
+Flask-Cors
+gunicorn
+SQLAlchemy
+psycopg2-binary
+firebase-admin
