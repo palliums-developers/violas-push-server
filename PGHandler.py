@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
@@ -53,13 +55,18 @@ class PGHandler(Singleton):
 
         return True, info
 
-    def AddMessageRecord(self, version):
+    def AddMessageRecord(self, version, address, title, body, data):
         s = self.session()
         try:
             record = ViolasMessageRecord(
                 version = version,
+                address = address,
+                title = title,
+                body = body,
+                data = data,
                 readed = 0
             )
+
             s.add(record)
             s.commit()
         except OperationalError:

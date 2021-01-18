@@ -3,22 +3,6 @@ from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Numeri
 
 Base = declarative_base()
 
-class ViolasDeviceInfo(Base):
-    __tablename__ = "device_info"
-
-    id = Column(BigInteger, primary_key = True, autoincrement = True)
-    address = Column(String(64), nullable = False)
-    device_type = Column(String(16), nullable = False)
-    token = Column(Text, nullable = False)
-    language = Column(String(32), nullable = False)
-    location = Column(String(32), nullable = False)
-
-class ViolasMessageRecord(Base):
-    __tablename__ = "message_record"
-
-    id = Column(BigInteger, primary_key = True, autoincrement = True)
-    version = Column(BigInteger, nullable = False)
-    readed = Column(SmallInteger, nullable = False) # 0: unread; 1: readed
 
 class ViolasTransaction(Base):
     __tablename__ = "transactions"
@@ -43,3 +27,24 @@ class ViolasTransaction(Base):
     status = Column(SmallInteger, nullable = True)
     event = Column(Text(), nullable = True)
     confirmed_time = Column(Integer, nullable = True)
+
+class ViolasDeviceInfo(Base):
+    __tablename__ = "device_info"
+
+    id = Column(BigInteger, primary_key = True, autoincrement = True)
+    address = Column(String(64), nullable = False)
+    device_type = Column(String(16), nullable = False)
+    token = Column(Text, nullable = False)
+    language = Column(String(32), nullable = False)
+    location = Column(String(32), nullable = True)
+
+class ViolasMessageRecord(Base):
+    __tablename__ = "message_record"
+
+    id = Column(BigInteger, primary_key = True, autoincrement = True)
+    version = Column(BigInteger, nullable = False)
+    sender = Column(String(64), nullable = False)
+    title = Column(Text, nullable = False)
+    body = Column(Text, nullable = False)
+    data = Column(Text, nullable = False)
+    readed = Column(SmallInteger, nullable = False) # 0: unread; 1: readed

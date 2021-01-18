@@ -22,6 +22,10 @@ class Message:
     def GeneratorBody(self):
         pass
 
+    @abstractmethod
+    def GeneratorData(self):
+        pass
+
     def SetDeviceConfig(self, message, deviceType):
         if deviceType == "apple":
             message.apns = messaging.APNSConfig(
@@ -77,10 +81,7 @@ class TransferSenderMessage(Message):
                 title = self.GeneratorTitle(),
                 body = self.GeneratorBody()
             ),
-            data = {
-                "service": "violas_01",
-                "content": transactionInfo.version
-            },
+            data = self.GeneratorData(),
             token = self.token
         )
 
@@ -110,6 +111,14 @@ class TransferSenderMessage(Message):
 
         return f"{bodyContent.get(self.language)} {self.address}"
 
+    def GeneratorData(self):
+        data = {
+            "service": "violas_01",
+            "content": str(self.version)
+        }
+
+        return data
+
 class TransferReceiverMessage(Message):
     def __init__(self, txnInfo, deviceInfo):
         self.version = txnInfo.get("version")
@@ -127,10 +136,8 @@ class TransferReceiverMessage(Message):
                 title = self.GeneratorTitle(),
                 body = self.GeneratorBody()
             ),
-            data = {
-                "service": "violas_01",
-                "content": self.version
-            }
+            data = self.GeneratorData(),
+            token = self.token
         )
 
         message = self.SetDeviceConfig(message, self.deviceType)
@@ -153,13 +160,20 @@ class TransferReceiverMessage(Message):
 
         return f"{bodyContent.get(self.language)} {address}"
 
+    def GeneratorData(self):
+        data = {
+            "service": "violas_01",
+            "content": str(self.version)
+        }
+
+        return data
+
 class FCMWrapper:
     def __init__(self, cert_path):
         self.cred = credentials.Certificate(cert_path)
         self.app = firebase_admin.initialize_app(self.cred)
 
     def SendMessage(self, message):
-        
         response = messaging.send(message)
         return response
 

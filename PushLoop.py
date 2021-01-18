@@ -1,6 +1,7 @@
 from threading import Thread
 import logging
 from time import sleep
+import json
 
 from MessagePushQueue import MessagePushQueue
 from PGHandler import PGHandler
@@ -35,8 +36,10 @@ class PushLoop(Thread):
             if deviceInfo is None:
                 continue
 
-            message = TransferSenderMessage(txnInfo, deviceInfo)
             fcm = FCMWrapper(Common.CERT_PATH)
+
+            message = TransferSenderMessage(txnInfo, deviceInfo)
+            pgHandler.AddMessageRecord(version, txnInfo.get("sender"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
             fcm.SendMessage(message)
 
             if txnInfo.status == "Executed":
@@ -45,4 +48,5 @@ class PushLoop(Thread):
                     continue
 
                 message = TransferReceiverMessage(txnInfo, deviceInfo)
+                pgHandler.AddMessageRecord(version, txnInfo.get("receiver"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
                 fcm.SendMessage(message)
