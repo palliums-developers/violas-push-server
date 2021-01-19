@@ -22,6 +22,9 @@ class PGHandler(Singleton):
         finally:
             s.close()
 
+        if result is None:
+            return True, None
+
         info = {
             "token": result.token,
             "device_type": result.device_type,
@@ -41,16 +44,19 @@ class PGHandler(Singleton):
         finally:
             s.close()
 
+        if result is None:
+            return True, None
+
         info = {
-            "sender": info.sender,
-            "receiver": info.receiver,
-            "date": info.confirmed_time,
-            "amount": info.amount,
-            "currency": info.currency,
-            "gas": info.gas_used,
-            "gas_currency": info.gas_currency,
-            "type": info.transaction_type,
-            "status": info.status
+            "sender": result.sender,
+            "receiver": result.receiver,
+            "date": result.confirmed_time,
+            "amount": result.amount,
+            "currency": result.currency,
+            "gas": result.gas_used,
+            "gas_currency": result.gas_currency,
+            "type": result.transaction_type,
+            "status": result.status
         }
 
         return True, info
