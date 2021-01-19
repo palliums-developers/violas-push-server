@@ -56,7 +56,7 @@ class PushLoop(Thread):
 
                 logging.debug(f"Send notifiaction to receiver: {txnInfo.get('receiver')}")
                 message = TransferReceiverMessage(txnInfo, deviceInfo)
-                logging.debug(f"{version}, {txnInfo.get("receiver")}, {message.GeneratorTitle()}, {message.GeneratorBody()}, {json.dumps(message.GeneratorData())}")
+                logging.debug(f"{version}, {txnInfo.get('receiver')}, {message.GeneratorTitle()}, {message.GeneratorBody()}, {json.dumps(message.GeneratorData())}")
                 pgHandler.AddMessageRecord(version, txnInfo.get("receiver"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
                 response = fcm.SendMessage(message.MakeMessage())
                 logging.debug(f"The response of send to receiver: {response} ")
