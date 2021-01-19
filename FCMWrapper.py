@@ -154,13 +154,13 @@ class TransferReceiverMessage(BaseMessage):
 
         return f"{self.currency}: {self.amount} {self.currency} {titleContent.get(self.language)}"
 
-    def GeneratorBody(self, address, language):
+    def GeneratorBody(self):
         bodyContent = {
             "en": "Payment address:",
             "cn": "发款地址："
         }
 
-        return f"{bodyContent.get(self.language)} {address}"
+        return f"{bodyContent.get(self.language)} {self.address}"
 
     def GeneratorData(self):
         data = {
