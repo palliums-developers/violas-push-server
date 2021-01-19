@@ -51,9 +51,9 @@ class PGHandler(Singleton):
             "sender": result.sender,
             "receiver": result.receiver,
             "date": result.confirmed_time,
-            "amount": result.amount,
+            "amount": int(result.amount),
             "currency": result.currency,
-            "gas": result.gas_used,
+            "gas": int(result.gas_used),
             "gas_currency": result.gas_currency,
             "type": result.transaction_type,
             "status": result.status
