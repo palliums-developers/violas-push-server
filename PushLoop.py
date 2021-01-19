@@ -10,13 +10,19 @@ import Common
 
 class PushLoop(Thread):
     def __init__(self):
-        super().__init__()
+        Thread.__init__(self)
         self.queue = MessagePushQueue()
 
     def run(self):
-        logging.debug(f"Push loop thread start.")
+        logging.debug(f"Push loop thread start, thread name {self.getName()}.")
 
+        aliveCount = 0
         while True:
+            aliveCount += 1
+            if aliveCount == 500:
+                aliveCount = 0
+                logging.debug("PushLoop thread is alive!")
+
             version = self.queue.PopMessage()
             if version is None:
                 sleep(1 / 1000 * 500)
@@ -33,14 +39,12 @@ class PushLoop(Thread):
                 self.queue.AddMessage(version)
                 continue
 
-            if deviceInfo is None:
-                continue
+            if deviceInfo is not None:
+                fcm = FCMWrapper(Common.CERT_PATH)
 
-            fcm = FCMWrapper(Common.CERT_PATH)
-
-            message = TransferSenderMessage(txnInfo, deviceInfo)
-            pgHandler.AddMessageRecord(version, txnInfo.get("sender"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
-            fcm.SendMessage(message)
+                message = TransferSenderMessage(txnInfo, deviceInfo)
+                pgHandler.AddMessageRecord(version, txnInfo.get("sender"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
+                fcm.SendMessage(message)
 
             if txnInfo.status == "Executed":
                 succ, deviceInfo = pgHandler.GetDeviceInfo(txnInfo.receiver)
@@ -50,3 +54,5 @@ class PushLoop(Thread):
                 message = TransferReceiverMessage(txnInfo, deviceInfo)
                 pgHandler.AddMessageRecord(version, txnInfo.get("receiver"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
                 fcm.SendMessage(message)
+
+        logging.debug(f"Push loop thread end, thread name {self.getName()}")
