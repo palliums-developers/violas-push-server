@@ -13,7 +13,7 @@ class MessagePushQueue(Singleton):
             item = self.pushQueue.pop(0)
             logging.debug(f"Pop item: {item}, Queue size: {len(self.pushQueue)}")
         except IndexError:
-            logging.debug(f"Queue is empty.")
+            # logging.debug(f"Queue is empty.")
             return None
 
         return item
