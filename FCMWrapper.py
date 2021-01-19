@@ -1,5 +1,6 @@
 import datetime
 from abc import abstractmethod
+import logging
 
 import firebase_admin
 from firebase_admin import credentials
@@ -178,7 +179,8 @@ class FCMWrapper:
     def SendMessage(self, message):
         try:
             response = messaging.send(message)
-        except:
+        except Exception as e:
+            logging.debug(f"Send message failed, get exception: {e}")
             return None
         return response
 
