@@ -48,6 +48,7 @@ class PGHandler(Singleton):
             return True, None
 
         info = {
+            "version": result.id - 1,
             "sender": result.sender,
             "receiver": result.receiver,
             "date": result.confirmed_time,
