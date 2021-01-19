@@ -3,7 +3,7 @@ import json, logging
 from flask import Flask, request
 from flask_cors import CORS
 
-import FCMWrapper
+from FCMWrapper import FCMWrapper
 from PGHandler import PGHandler
 import Common
 from PushLoop import PushLoop
@@ -13,6 +13,9 @@ logging.basicConfig(filename = "PushServer.log", level = logging.DEBUG)
 
 pgHandler = PGHandler()
 pgHandler.init(Common.DB_URL)
+
+fcm = FCMWrapper()
+fcm.init(Common.CERT_PATH)
 
 queue = MessagePushQueue()
 pl = PushLoop()

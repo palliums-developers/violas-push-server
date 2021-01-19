@@ -171,12 +171,15 @@ class TransferReceiverMessage(BaseMessage):
         return data
 
 class FCMWrapper:
-    def __init__(self, cert_path):
+    def init(self, cert_path):
         self.cred = credentials.Certificate(cert_path)
         self.app = firebase_admin.initialize_app(self.cred)
 
     def SendMessage(self, message):
-        response = messaging.send(message)
+        try:
+            response = messaging.send(message)
+        except:
+            return None
         return response
 
     def SendMessages(self, messages):
