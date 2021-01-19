@@ -130,7 +130,7 @@ class TransferReceiverMessage(BaseMessage):
         self.token = deviceInfo.get("token")
         self.language = deviceInfo.get("language").lower()
         self.deviceType = deviceInfo.get("device_type").lower()
-        return 
+        return
 
     def MakeMessage(self):
         message = messaging.Message(
