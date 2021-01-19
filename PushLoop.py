@@ -45,7 +45,7 @@ class PushLoop(Thread):
                 logging.debug(f"Send notifiaction to sender: {txnInfo.get('sender')}")
                 message = TransferSenderMessage(txnInfo, deviceInfo)
                 pgHandler.AddMessageRecord(version, txnInfo.get("sender"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
-                response = fcm.SendMessage(message)
+                response = fcm.SendMessage(message.MakeMessage())
                 logging.debug(f"The response of send to sender: {response}")
 
             logging.debug(f"Prepare for send message to receiver!")
@@ -58,7 +58,7 @@ class PushLoop(Thread):
                 message = TransferReceiverMessage(txnInfo, deviceInfo)
                 logging.debug(f"{version}, {txnInfo.get('receiver')}, {message.GeneratorTitle()}, {message.GeneratorBody()}, {json.dumps(message.GeneratorData())}")
                 pgHandler.AddMessageRecord(version, txnInfo.get("receiver"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
-                response = fcm.SendMessage(message)
+                response = fcm.SendMessage(message.MakeMessage())
                 logging.debug(f"The response of send to receiver: {response} ")
 
         logging.debug(f"Push loop thread end, thread name {self.getName()}")
