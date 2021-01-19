@@ -28,6 +28,7 @@ class PushLoop(Thread):
                 sleep(1 / 1000 * 500)
                 continue
 
+            fcm = FCMWrapper()
             pgHandler = PGHandler()
             succ, txnInfo = pgHandler.GetTransactionInfo(version)
             if not succ or txnInfo is None:
