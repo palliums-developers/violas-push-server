@@ -10,7 +10,7 @@ import Common
 
 class PushLoop(Thread):
     def __init__(self):
-        Thread.__init__(self)
+        super().__init__()
         self.queue = MessagePushQueue()
 
     def run(self):
@@ -45,7 +45,8 @@ class PushLoop(Thread):
                 logging.debug(f"Send notifiaction to sender: {txnInfo.get('sender')}")
                 message = TransferSenderMessage(txnInfo, deviceInfo)
                 pgHandler.AddMessageRecord(version, txnInfo.get("sender"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
-                fcm.SendMessage(message)
+                response = fcm.SendMessage(message)
+                logging.debug(f"The response of send to sender: {response}")
 
             logging.debug(f"Prepare for send message to receiver!")
             if txnInfo.get("status") == "Executed":
@@ -56,6 +57,7 @@ class PushLoop(Thread):
                 logging.debug(f"Send notifiaction to receiver: {txnInfo.get('receiver')}")
                 message = TransferReceiverMessage(txnInfo, deviceInfo)
                 pgHandler.AddMessageRecord(version, txnInfo.get("receiver"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
-                fcm.SendMessage(message)
+                response = fcm.SendMessage(message)
+                logging.debug(f"The response of send to receiver: {response} ")
 
         logging.debug(f"Push loop thread end, thread name {self.getName()}")
