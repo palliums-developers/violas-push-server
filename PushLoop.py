@@ -41,7 +41,7 @@ class PushLoop(Thread):
 
             if deviceInfo is not None:
                 fcm = FCMWrapper(Common.CERT_PATH)
-
+                logging.debug("Send notifiaction to sender: {txnInfo.sender}")
                 message = TransferSenderMessage(txnInfo, deviceInfo)
                 pgHandler.AddMessageRecord(version, txnInfo.get("sender"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
                 fcm.SendMessage(message)
@@ -51,6 +51,7 @@ class PushLoop(Thread):
                 if not succ or deviceInfo is None:
                     continue
 
+                logging.debug("Send notifiaction to sender: {txnInfo.receiver}")
                 message = TransferReceiverMessage(txnInfo, deviceInfo)
                 pgHandler.AddMessageRecord(version, txnInfo.get("receiver"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
                 fcm.SendMessage(message)
