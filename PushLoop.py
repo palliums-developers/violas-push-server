@@ -42,7 +42,6 @@ class PushLoop(Thread):
                 continue
 
             if deviceInfo is not None:
-                fcm = FCMWrapper()
                 logging.debug(f"Send notifiaction to sender: {txnInfo.get('sender')}")
                 message = TransferSenderMessage(txnInfo, deviceInfo)
                 pgHandler.AddMessageRecord(version, txnInfo.get("sender"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
