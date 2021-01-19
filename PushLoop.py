@@ -34,24 +34,26 @@ class PushLoop(Thread):
                 self.queue.AddMessage(version)
                 continue
 
-            succ, deviceInfo = pgHandler.GetDeviceInfo(txnInfo.sender)
+            logging.debug(f"Prepare for send message to sender!")
+            succ, deviceInfo = pgHandler.GetDeviceInfo(txnInfo.get("sender"))
             if not succ:
                 self.queue.AddMessage(version)
                 continue
 
             if deviceInfo is not None:
                 fcm = FCMWrapper(Common.CERT_PATH)
-                logging.debug("Send notifiaction to sender: {txnInfo.sender}")
+                logging.debug("Send notifiaction to sender: {txnInfo.get('sender')}")
                 message = TransferSenderMessage(txnInfo, deviceInfo)
                 pgHandler.AddMessageRecord(version, txnInfo.get("sender"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
                 fcm.SendMessage(message)
 
-            if txnInfo.status == "Executed":
-                succ, deviceInfo = pgHandler.GetDeviceInfo(txnInfo.receiver)
+            logging.debug(f"Prepare for send message to sender!")
+            if txnInfo.get("status") == "Executed":
+                succ, deviceInfo = pgHandler.GetDeviceInfo(txnInfo.get("receiver"))
                 if not succ or deviceInfo is None:
                     continue
 
-                logging.debug("Send notifiaction to sender: {txnInfo.receiver}")
+                logging.debug("Send notifiaction to sender: {txnInfo.get('receiver')}")
                 message = TransferReceiverMessage(txnInfo, deviceInfo)
                 pgHandler.AddMessageRecord(version, txnInfo.get("receiver"), message.GeneratorTitle(), message.GeneratorBody(), json.dumps(message.GeneratorData()))
                 fcm.SendMessage(message)
