@@ -21,7 +21,7 @@ class PushLoop(Thread):
             aliveCount += 1
             if aliveCount == 500:
                 aliveCount = 0
-                logging.debug("PushLoop thread is alive!")
+                logging.debug(f"PushLoop thread is alive, thread name {self.getName()}!")
 
             version = self.queue.PopMessage()
             if version is None:
