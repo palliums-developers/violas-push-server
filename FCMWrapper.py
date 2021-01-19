@@ -9,7 +9,7 @@ from firebase_admin import messaging
 # cred = credentials.Certificate("./fcm-test-project-93d7f-firebase-adminsdk-1hb7h-11daf4862e.json")
 # default_app = firebase_admin.initialize_app(cred)
 
-class Message:
+class BaseMessage:
     @abstractmethod
     def MakeMessage(self):
         pass
@@ -64,7 +64,7 @@ class Message:
 
         return message
 
-class TransferSenderMessage(Message):
+class TransferSenderMessage(BaseMessage):
     def __init__(self, txnInfo, deviceInfo):
         self.version = txnInfo.get("version")
         self.address = txnInfo.get("sender")
@@ -74,6 +74,7 @@ class TransferSenderMessage(Message):
         self.token = deviceInfo.get("token")
         self.language = deviceInfo.get("language").lower()
         self.deviceType = deviceInfo.get("device_type").lower()
+        return
 
     def MakeMessage(self):
         message = messaging.Message(
@@ -119,7 +120,7 @@ class TransferSenderMessage(Message):
 
         return data
 
-class TransferReceiverMessage(Message):
+class TransferReceiverMessage(BaseMessage):
     def __init__(self, txnInfo, deviceInfo):
         self.version = txnInfo.get("version")
         self.address = txnInfo.get("receiver")
@@ -129,6 +130,7 @@ class TransferReceiverMessage(Message):
         self.token = deviceInfo.get("token")
         self.language = deviceInfo.get("language").lower()
         self.deviceType = deviceInfo.get("device_type").lower()
+        return 
 
     def MakeMessage(self):
         message = messaging.Message(
