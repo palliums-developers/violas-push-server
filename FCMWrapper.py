@@ -187,7 +187,7 @@ class FCMWrapper:
         try:
             response = messaging.send(message)
         except Exception as e:
-            logging.debug(f"Send message failed, get exception: {e}")
+            logging.error(f"Send message failed, get exception: {e}")
             return None
         return response
 
@@ -196,6 +196,38 @@ class FCMWrapper:
             response = messaging.send(m)
 
         return
+
+    def SendNotification(self, title, summary, url):
+        message = messaging.Message(
+            notification = messaging.Notification(
+                title = title,
+                body = summary
+            ),
+            data = {
+                "service": "violas_00",
+                "content": url
+            },
+            topic = "notification",
+            apns = messaging.APNSConfig(
+                payload=messaging.APNSPayload(
+                    aps = messaging.Aps(
+                        content_available = True,
+                        badge = 1,
+                        sound = "default"
+                    )
+                )
+            ),
+            android = messaging.AndroidConfig(
+                ttl = datetime.timedelta(seconds = 3600),
+                priority = "normal"
+            ),
+            webpush = messaging.WebpushConfig()
+        )
+
+        try:
+            messaging.send(message)
+        except Exception as e:
+            logging.error(f"Send notification message failed, get exception: {e}")
 
     def SubscribeToTopic(self, topic, token):
         response = messaging.subscribe_to_topic([token], topic)

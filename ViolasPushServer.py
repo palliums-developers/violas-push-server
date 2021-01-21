@@ -37,10 +37,23 @@ def PushTransactionMessage():
 
     return {"code": 0}
 
-@app.route("/violas/push/notice", methods = ["POST"])
+@app.route("/violas/push/notification", methods = ["POST"])
 def PushSystemNotice():
     params = request.get_json()
-    noticeId = params.get("notice_id")
+    title = params.get("title")
+    content = params.get("content")
+    url = params.get("url")
 
+    fcm.SendNotification(title, summary, url)
+
+    return {"code": 0}
+
+@app.route("/violas/subscribe/topic", methods = ["POST"])
+def SubscribeTopic():
+    params = request.get_json()
+    topic = params.get("topic")
+    token = params.get("token")
+
+    fcm.SubscribeToTopic(topic, token)
 
     return {"code": 0}
