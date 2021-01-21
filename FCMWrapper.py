@@ -1,4 +1,5 @@
 import datetime
+from time import time
 from abc import abstractmethod
 import logging
 
@@ -71,11 +72,11 @@ class TransferSenderMessage(BaseMessage):
         self.address = txnInfo.get("sender")
         self.amount = txnInfo.get("amount")
         self.currency = txnInfo.get("currency")
-        self.status = 0 if txnInfo.get("status") == "Executed" else 1
+        self.status = txnInfo.get("status")
+        self.txnType = txnInfo.get("type")
         self.token = deviceInfo.get("token")
         self.language = deviceInfo.get("language").lower()
         self.deviceType = deviceInfo.get("device_type").lower()
-        return
 
     def MakeMessage(self):
         message = messaging.Message(
@@ -102,8 +103,8 @@ class TransferSenderMessage(BaseMessage):
                 "转帐失败！"
             ]
         }
-
-        return f"{self.currency}: {self.amount} {self.currency} {titleContent.get(self.language)[self.status]}"
+        status = 0 if self.status == "Executed" else 1
+        return f"{self.currency}: {self.amount} {self.currency} {titleContent.get(self.language)[status]}"
 
     def GeneratorBody(self):
         bodyContent = {
@@ -116,7 +117,10 @@ class TransferSenderMessage(BaseMessage):
     def GeneratorData(self):
         data = {
             "service": "violas_01",
-            "content": str(self.version)
+            "version": str(self.version),
+            "date": int(time()),
+            "type": self.txnType,
+            "status": self.status
         }
 
         return data
@@ -127,11 +131,11 @@ class TransferReceiverMessage(BaseMessage):
         self.address = txnInfo.get("receiver")
         self.amount = txnInfo.get("amount")
         self.currency = txnInfo.get("currency")
-        self.status = 0 if txnInfo.get("status") == "Executed" else 1
+        self.status = txnInfo.get("status")
+        self.txnType = txnInfo.get("type")
         self.token = deviceInfo.get("token")
         self.language = deviceInfo.get("language").lower()
         self.deviceType = deviceInfo.get("device_type").lower()
-        return
 
     def MakeMessage(self):
         message = messaging.Message(
@@ -166,7 +170,10 @@ class TransferReceiverMessage(BaseMessage):
     def GeneratorData(self):
         data = {
             "service": "violas_01",
-            "content": str(self.version)
+            "version": str(self.version),
+            "date": int(time()),
+            "type": self.txnType,
+            "status": self.status
         }
 
         return data
