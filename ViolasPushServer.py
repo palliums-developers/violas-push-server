@@ -41,7 +41,7 @@ def PushTransactionMessage():
 def PushSystemNotice():
     params = request.get_json()
     title = params.get("title")
-    content = params.get("content")
+    summary = params.get("summary")
     url = params.get("url")
 
     fcm.SendNotification(title, summary, url)
