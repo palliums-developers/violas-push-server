@@ -104,7 +104,7 @@ class TransferSenderMessage(BaseMessage):
             ]
         }
         status = 0 if self.status == "Executed" else 1
-        return f"{self.currency}: {self.amount} {self.currency} {titleContent.get(self.language)[status]}"
+        return f"{self.currency}: {self.amount / 1000000} {self.currency} {titleContent.get(self.language)[status]}"
 
     def GeneratorBody(self):
         bodyContent = {
@@ -157,7 +157,7 @@ class TransferReceiverMessage(BaseMessage):
             "cn": "收款成功！"
         }
 
-        return f"{self.currency}: {self.amount} {self.currency} {titleContent.get(self.language)}"
+        return f"{self.currency}: {self.amount / 1000000} {self.currency} {titleContent.get(self.language)}"
 
     def GeneratorBody(self):
         bodyContent = {
