@@ -48,7 +48,7 @@ def PushSystemNotice():
 
     return {"code": 0}
 
-@app.route("/violas/subscribe/topic", methods = ["POST"])
+@app.route("/violas/push/subscribe/topic", methods = ["POST"])
 def SubscribeTopic():
     params = request.get_json()
     topic = params.get("topic")
