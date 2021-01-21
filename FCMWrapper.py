@@ -1,3 +1,4 @@
+import json
 import datetime
 from time import time
 from abc import abstractmethod
@@ -7,6 +8,8 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import auth
 from firebase_admin import messaging
+
+from PGHandler import PGHandler
 
 # cred = credentials.Certificate("./fcm-test-project-93d7f-firebase-adminsdk-1hb7h-11daf4862e.json")
 # default_app = firebase_admin.initialize_app(cred)
@@ -198,15 +201,17 @@ class FCMWrapper:
         return
 
     def SendNotification(self, title, summary, url):
+        data = {
+            "service": "violas_00",
+            "content": url,
+            "date": str(int(time()))
+        }
         message = messaging.Message(
             notification = messaging.Notification(
                 title = title,
                 body = summary
             ),
-            data = {
-                "service": "violas_00",
-                "content": url
-            },
+            data = data,
             topic = "notification",
             apns = messaging.APNSConfig(
                 payload=messaging.APNSPayload(
@@ -228,6 +233,10 @@ class FCMWrapper:
             messaging.send(message)
         except Exception as e:
             logging.error(f"Send notification message failed, get exception: {e}")
+
+        pgHandler = PGHandler()
+
+        pgHandler.AddNotificationRecord(title, summary, json.dumps(data))
 
     def SubscribeToTopic(self, topic, token):
         response = messaging.subscribe_to_topic([token], topic)

@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 
 from Singleton import Singleton
-from Modules import ViolasDeviceInfo, ViolasMessageRecord, ViolasTransaction
+from Modules import ViolasDeviceInfo, ViolasMessageRecord, ViolasTransaction, ViolasNotificationRecord
 
 class PGHandler(Singleton):
     def init(self, dbUrl):
@@ -72,6 +72,26 @@ class PGHandler(Singleton):
                 body = body,
                 data = data,
                 readed = 0
+            )
+
+            s.add(record)
+            s.commit()
+        except OperationalError:
+            logging.error(f"ERROR: Database operation failed!")
+            return False
+        finally:
+            s.close()
+
+        return True
+
+    def AddNotificationRecord(self, title, body, data):
+        s = self.session()
+
+        try:
+            record = ViolasNotificationRecord(
+                title = title,
+                body = body,
+                data = data
             )
 
             s.add(record)
