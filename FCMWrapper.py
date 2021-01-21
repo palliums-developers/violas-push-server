@@ -118,7 +118,7 @@ class TransferSenderMessage(BaseMessage):
         data = {
             "service": "violas_01",
             "version": str(self.version),
-            "date": str(int(time()))
+            "date": str(int(time())),
             "type": self.txnType,
             "status": self.status
         }
