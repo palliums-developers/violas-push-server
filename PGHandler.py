@@ -84,22 +84,24 @@ class PGHandler(Singleton):
 
         return True
 
-    def AddNotificationRecord(self, title, body, data):
+    def GetNotification(self, notificationId):
         s = self.session()
 
         try:
-            record = ViolasNotificationRecord(
-                title = title,
-                body = body,
-                data = data
-            )
-
-            s.add(record)
-            s.commit()
+            result = s.query(ViolasNotificationRecord).filter(ViolasNotificationRecord.id == notificationId).first()
         except OperationalError:
             logging.error(f"ERROR: Database operation failed!")
-            return False
+            return False, None
         finally:
             s.close()
 
-        return True
+        if result is None:
+            return True, None
+
+        info = {
+            result.title,
+            result.body,
+            result.date
+        }
+
+        return True, info

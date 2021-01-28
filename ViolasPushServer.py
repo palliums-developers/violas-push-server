@@ -27,24 +27,26 @@ CORS(app, resources = r"/*")
 @app.route("/violas/push/message", methods = ["POST"])
 def PushTransactionMessage():
     params = request.get_json()
-    version = params.get("version")
+    data = {
+        "service": params.get("service"),
+        "content": params.get("version")
+    }
 
-    if version is None:
-        return {"code": 1000}
-
-    logging.debug(f"Get new request, version: {version}")
-    queue.AddMessage(version)
+    logging.debug(f"Get new request, data: {data}")
+    queue.AddMessage(data)
 
     return {"code": 0}
 
 @app.route("/violas/push/notification", methods = ["POST"])
 def PushSystemNotice():
     params = request.get_json()
-    title = params.get("title")
-    summary = params.get("summary")
-    url = params.get("url")
+    data = {
+        "service": params.get("service"),
+        "content": params.get("id")
+    }
 
-    fcm.SendNotification(title, summary, url)
+    logging.debug(f"Get new request, data:{data}")
+    queue.AddMessage(data)
 
     return {"code": 0}
 

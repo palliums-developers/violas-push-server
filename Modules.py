@@ -3,7 +3,6 @@ from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Numeri
 
 Base = declarative_base()
 
-
 class ViolasTransaction(Base):
     __tablename__ = "transactions"
 
@@ -24,9 +23,9 @@ class ViolasTransaction(Base):
     script_hash = Column(String(64), nullable = True)
     signature = Column(Text(), nullable = True)
     signature_scheme = Column(String(32), nullable = True)
-    status = Column(SmallInteger, nullable = True)
+    status = Column(String(32), nullable = True)
     event = Column(Text(), nullable = True)
-    confirmed_time = Column(Integer, nullable = True)
+    confirmed_time = Column(BigInteger, nullable = True)
 
 class ViolasDeviceInfo(Base):
     __tablename__ = "device_info"
@@ -55,4 +54,4 @@ class ViolasNotificationRecord(Base):
     id = Column(BigInteger, primary_key = True, autoincrement = True)
     title = Column(Text, nullable = False)
     body = Column(Text, nullable = False)
-    data = Column(Text, nullable = False)
+    date = Column(Integer, nullable = False)
