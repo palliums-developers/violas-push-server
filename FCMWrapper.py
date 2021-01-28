@@ -14,6 +14,8 @@ from PGHandler import PGHandler
 # cred = credentials.Certificate("./fcm-test-project-93d7f-firebase-adminsdk-1hb7h-11daf4862e.json")
 # default_app = firebase_admin.initialize_app(cred)
 
+NOTI_URL = "http://www.baidu.com"
+
 class BaseMessage:
     @abstractmethod
     def MakeMessage(self):
@@ -68,6 +70,44 @@ class BaseMessage:
             message.webpush = messaging.WebpushConfig()
 
         return message
+
+class NotificationMessage(BaseMessage):
+    def __init__(self, data, info):
+        self.notifiId = data.get("content")
+        self.title = info.get("title")
+        self.body = info.get("body")
+        self.date = info.get("date")
+        self.language = info.get("language").lower()
+
+    def MakeMessage(self):
+        message = messaging.Message(
+            notification = messaging.Notification(
+                title = self.GeneratorTitle(),
+                body = self.GeneratorBody()
+            ),
+            data = self.GeneratorData(),
+            topic = "notification"
+        )
+
+        message = self.SetDeviceConfig(message, "all")
+
+        return message
+
+    def GeneratorTitle(self):
+        return self.title
+
+    def GeneratorBody(self):
+        return self.body[:20]
+
+    def GeneratorData(self):
+        data = {
+            "service": "service_00",
+            "content": NOTI_URL + str(self.notifiId),
+            "date": str(self.date),
+            "id": str(self.notifiId)
+        }
+
+        return data
 
 class TransferSenderMessage(BaseMessage):
     def __init__(self, txnInfo, deviceInfo):
@@ -199,44 +239,6 @@ class FCMWrapper:
             response = messaging.send(m)
 
         return
-
-    def SendNotification(self, title, summary, url):
-        data = {
-            "service": "violas_00",
-            "content": url,
-            "date": str(int(time()))
-        }
-        message = messaging.Message(
-            notification = messaging.Notification(
-                title = title,
-                body = summary
-            ),
-            data = data,
-            topic = "notification",
-            apns = messaging.APNSConfig(
-                payload=messaging.APNSPayload(
-                    aps = messaging.Aps(
-                        content_available = True,
-                        badge = 1,
-                        sound = "default"
-                    )
-                )
-            ),
-            android = messaging.AndroidConfig(
-                ttl = datetime.timedelta(seconds = 3600),
-                priority = "normal"
-            ),
-            webpush = messaging.WebpushConfig()
-        )
-
-        try:
-            messaging.send(message)
-        except Exception as e:
-            logging.error(f"Send notification message failed, get exception: {e}")
-
-        pgHandler = PGHandler()
-
-        pgHandler.AddNotificationRecord(title, summary, json.dumps(data))
 
     def SubscribeToTopic(self, topic, token):
         response = messaging.subscribe_to_topic([token], topic)
