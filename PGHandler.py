@@ -1,11 +1,12 @@
 import logging
+import json
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 
 from Singleton import Singleton
-from Modules import ViolasDeviceInfo, ViolasMessageRecord, ViolasTransaction, ViolasNotificationRecord
+from Modules import *
 
 class PGHandler(Singleton):
     def init(self, dbUrl):
@@ -62,11 +63,11 @@ class PGHandler(Singleton):
 
         return True, info
 
-    def AddMessageRecord(self, version, address, title, body, data):
+    def AddMessageRecord(self, messageId, address, title, body, data):
         s = self.session()
         try:
             record = ViolasMessageRecord(
-                version = version,
+                message_id = messageId,
                 address = address,
                 title = title,
                 body = body,
@@ -84,24 +85,24 @@ class PGHandler(Singleton):
 
         return True
 
-    def GetNotification(self, notificationId):
+    def GetNotice(self, noticeId):
         s = self.session()
 
         try:
-            result = s.query(ViolasNotificationRecord).filter(ViolasNotificationRecord.id == notificationId).first()
+            result = s.query(ViolasNoticeRecord).filter(ViolasNoticeRecord.message_id == noticeId).first()
+            deviceInfo = s.query(ViolasDeviceInfo)
         except OperationalError:
             logging.error(f"ERROR: Database operation failed!")
             return False, None
         finally:
             s.close()
 
-        if result is None:
-            return True, None
-
+        content = json.loads(result.content, )
+        platform = json.loads(result.platform, )
         info = {
-            result.title,
-            result.body,
-            result.date
+            "content": content,
+            "platform": platform,
+            "date": result.date
         }
 
         return True, info

@@ -14,8 +14,6 @@ from PGHandler import PGHandler
 # cred = credentials.Certificate("./fcm-test-project-93d7f-firebase-adminsdk-1hb7h-11daf4862e.json")
 # default_app = firebase_admin.initialize_app(cred)
 
-NOTI_URL = "http://www.baidu.com"
-
 class BaseMessage:
     @abstractmethod
     def MakeMessage(self):
@@ -73,38 +71,36 @@ class BaseMessage:
 
 class NotificationMessage(BaseMessage):
     def __init__(self, data, info):
-        self.notifiId = data.get("content")
-        self.title = info.get("title")
-        self.body = info.get("body")
+        self.service = data.get("service")
+        self.notifiId = data.get("message_id")
+        self.content = info.get("content")
         self.date = info.get("date")
-        self.language = info.get("language").lower()
 
-    def MakeMessage(self):
+    def MakeMessage(self, platform, language):
         message = messaging.Message(
             notification = messaging.Notification(
-                title = self.GeneratorTitle(),
-                body = self.GeneratorBody()
+                title = self.GeneratorTitle(language),
+                body = self.GeneratorBody(language)
             ),
             data = self.GeneratorData(),
-            topic = "notification"
+            topic = f"notification_{language}_{platform}"
         )
 
         message = self.SetDeviceConfig(message, "all")
 
         return message
 
-    def GeneratorTitle(self):
-        return self.title
+    def GeneratorTitle(self, language):
+        return self.content.get(language).get("title")
 
-    def GeneratorBody(self):
-        return self.body[:20]
+    def GeneratorBody(self, language):
+        return self.content.get(language).get("summary")
 
     def GeneratorData(self):
         data = {
-            "service": "service_00",
-            "content": NOTI_URL + str(self.notifiId),
-            "date": str(self.date),
-            "id": str(self.notifiId)
+            "service": self.service,
+            "content": self.notifiId,
+            "date": str(self.date)
         }
 
         return data
