@@ -24,29 +24,21 @@ pl.start()
 app = Flask(__name__)
 CORS(app, resources = r"/*")
 
-@app.route("/violas/push/message", methods = ["POST"])
-def PushTransactionMessage():
-    params = request.get_json()
-    data = {
-        "service": params.get("service"),
-        "content": params.get("version")
-    }
-
-    logging.debug(f"Get new request, data: {data}")
-    queue.AddMessage(data)
-
-    return {"code": 0}
-
 @app.route("/violas/push/notification", methods = ["POST"])
 def PushSystemNotice():
     params = request.get_json()
-    data = {
-        "service": params.get("service"),
-        "content": params.get("id")
-    }
 
-    logging.debug(f"Get new request, data:{data}")
-    queue.AddMessage(data)
+    logging.debug(f"Get new request, data:{params}")
+    queue.AddMessage(params)
+
+    return {"code": 0}
+
+@app.route("/violas/push/message", methods = ["POST"])
+def PushTransactionMessage():
+    params = request.get_json()
+
+    logging.debug(f"Get new request, data: {params}")
+    queue.AddMessage(params)
 
     return {"code": 0}
 
