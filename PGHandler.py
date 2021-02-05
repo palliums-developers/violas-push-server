@@ -67,7 +67,7 @@ class PGHandler(Singleton):
         s = self.session()
         try:
             record = ViolasMessageRecord(
-                message_id = messageId,
+                message_id = "a_" + messageId,
                 address = address,
                 title = title,
                 body = body,
