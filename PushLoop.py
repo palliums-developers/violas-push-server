@@ -103,9 +103,9 @@ class PushLoop(Thread):
                 sleep(1 / 1000 * 500)
                 continue
 
-            if data.get("service") == "service_00":
+            if data.get("service") == "violas_00":
                 self.SendNotification(data)
-            elif data.get("service") == "service_01":
+            elif data.get("service") == "violas_01":
                 self.SendTransferMessage(data)
             else:
                 logging.error(f"Unknow data type!")
