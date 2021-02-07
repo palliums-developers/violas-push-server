@@ -28,7 +28,7 @@ class PGHandler(Singleton):
 
         info = {
             "token": result.token,
-            "device_type": result.device_type,
+            "platform": result.platform,
             "language": result.language,
             "location": result.location
         }
