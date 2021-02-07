@@ -49,6 +49,7 @@ class PushLoop(Thread):
             self.queue.AddMessage(data)
             return
 
+        logging.debug(f"Get device info: {deviceInfo}")
         if deviceInfo is not None:
             logging.debug(f"Send notifiaction to sender: {txnInfo.get('sender')}")
             message = TransferSenderMessage(txnInfo, deviceInfo)
