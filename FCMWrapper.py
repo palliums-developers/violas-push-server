@@ -31,8 +31,8 @@ class BaseMessage:
     def GeneratorData(self):
         pass
 
-    def SetDeviceConfig(self, message, deviceType):
-        if deviceType == "apple":
+    def SetPlatformConfig(self, message, platform):
+        if platform == "apple":
             message.apns = messaging.APNSConfig(
                 payload=messaging.APNSPayload(
                     aps = messaging.Aps(
@@ -42,12 +42,12 @@ class BaseMessage:
                     )
                 )
             )
-        elif deviceType == "android":
+        elif platform == "android":
             message.android = messaging.AndroidConfig(
                 ttl = datetime.timedelta(seconds = 3600),
                 priority = "normal"
             )
-        elif deviceType == "web":
+        elif platform == "web":
             message.webpush = messaging.WebpushConfig()
         else:
             message.apns = messaging.APNSConfig(
@@ -86,7 +86,7 @@ class NotificationMessage(BaseMessage):
             topic = f"notification_{language}_{platform}"
         )
 
-        message = self.SetDeviceConfig(message, "all")
+        message = self.SetPlatformConfig(message, "all")
 
         return message
 
@@ -115,7 +115,7 @@ class TransferSenderMessage(BaseMessage):
         self.txnType = txnInfo.get("type")
         self.token = deviceInfo.get("token")
         self.language = deviceInfo.get("language").lower()
-        self.deviceType = deviceInfo.get("device_type").lower()
+        self.platform = deviceInfo.get("platform").lower()
 
     def MakeMessage(self):
         message = messaging.Message(
@@ -127,7 +127,7 @@ class TransferSenderMessage(BaseMessage):
             token = self.token
         )
 
-        message = self.SetDeviceConfig(message, self.deviceType)
+        message = self.SetPlatformConfig(message, self.platform)
 
         return message
 
@@ -174,7 +174,7 @@ class TransferReceiverMessage(BaseMessage):
         self.txnType = txnInfo.get("type")
         self.token = deviceInfo.get("token")
         self.language = deviceInfo.get("language").lower()
-        self.deviceType = deviceInfo.get("device_type").lower()
+        self.platform = deviceInfo.get("platform").lower()
 
     def MakeMessage(self):
         message = messaging.Message(
@@ -186,7 +186,7 @@ class TransferReceiverMessage(BaseMessage):
             token = self.token
         )
 
-        message = self.SetDeviceConfig(message, self.deviceType)
+        message = self.SetPlatformConfig(message, self.platform)
 
         return message
 

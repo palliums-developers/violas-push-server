@@ -42,14 +42,14 @@ class PushLoop(Thread):
         if not succ or txnInfo is None:
             self.queue.AddMessage(data)
             return
+        logging.debug(f"Get transaction info: {txnInfo}!")
 
-        logging.debug(f"Prepare for send message to sender!")
         succ, deviceInfo = pgHandler.GetDeviceInfo(txnInfo.get("sender"))
         if not succ:
             self.queue.AddMessage(data)
             return
+        logging.debug(f"Get sender device info: {deviceInfo}")
 
-        logging.debug(f"Get device info: {deviceInfo}")
         if deviceInfo is not None:
             logging.debug(f"Send notifiaction to sender: {txnInfo.get('sender')}")
             message = TransferSenderMessage(txnInfo, deviceInfo)
@@ -71,6 +71,7 @@ class PushLoop(Thread):
             succ, deviceInfo = pgHandler.GetDeviceInfo(txnInfo.get("receiver"))
             if not succ or deviceInfo is None:
                 return
+            logging.debug(f"Get receiver device info: {deviceInfo}")
 
             logging.debug(f"Send notifiaction to receiver: {txnInfo.get('receiver')}")
             # logging.debug(f"txnInfo:{txnInfo}, deviceInfo:{deviceInfo}")
