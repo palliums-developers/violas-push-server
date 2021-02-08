@@ -113,7 +113,7 @@ class TransferSenderMessage(BaseMessage):
         self.currency = txnInfo.get("currency")
         self.status = txnInfo.get("status")
         self.txnType = txnInfo.get("type")
-        self.token = deviceInfo.get("token")
+        self.token = deviceInfo.get("fcm_token")
         self.language = deviceInfo.get("language").lower()
         self.platform = deviceInfo.get("platform").lower()
 
@@ -172,7 +172,7 @@ class TransferReceiverMessage(BaseMessage):
         self.currency = txnInfo.get("currency")
         self.status = txnInfo.get("status")
         self.txnType = txnInfo.get("type")
-        self.token = deviceInfo.get("token")
+        self.token = deviceInfo.get("fcm_token")
         self.language = deviceInfo.get("language").lower()
         self.platform = deviceInfo.get("platform").lower()
 

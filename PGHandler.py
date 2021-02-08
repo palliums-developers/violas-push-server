@@ -28,6 +28,7 @@ class PGHandler(Singleton):
 
         info = {
             "token": result.token,
+            "fcm_token": result.fcm_token,
             "platform": result.platform,
             "language": result.language,
             "location": result.location
