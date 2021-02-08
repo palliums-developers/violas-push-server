@@ -50,7 +50,7 @@ class PushLoop(Thread):
             return
         logging.debug(f"Get sender device info: {deviceInfo}")
 
-        if deviceInfo is not None:
+        if deviceInfo:
             logging.debug(f"Send notifiaction to sender: {txnInfo.get('sender')}")
             message = TransferSenderMessage(txnInfo, deviceInfo)
             messageId = hashlib.md5(f"{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
