@@ -108,7 +108,7 @@ class NotificationMessage(BaseMessage):
 class TransferSenderMessage(BaseMessage):
     def __init__(self, txnInfo, deviceInfo):
         self.version = txnInfo.get("version")
-        self.address = txnInfo.get("sender")
+        self.address = txnInfo.get("receiver")
         self.amount = txnInfo.get("amount")
         self.currency = txnInfo.get("currency")
         self.status = txnInfo.get("status")
@@ -167,7 +167,7 @@ class TransferSenderMessage(BaseMessage):
 class TransferReceiverMessage(BaseMessage):
     def __init__(self, txnInfo, deviceInfo):
         self.version = txnInfo.get("version")
-        self.address = txnInfo.get("receiver")
+        self.address = txnInfo.get("sender")
         self.amount = txnInfo.get("amount")
         self.currency = txnInfo.get("currency")
         self.status = txnInfo.get("status")
