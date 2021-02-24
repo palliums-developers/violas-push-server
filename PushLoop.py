@@ -53,7 +53,7 @@ class PushLoop(Thread):
         if deviceInfo:
             logging.debug(f"Send notifiaction to sender: {txnInfo.get('sender')}")
             message = TransferSenderMessage(txnInfo, deviceInfo)
-            messageId = hashlib.md5(f"{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
+            messageId = hashlib.md5(f"{txnInfo.get('version')}:{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
 
             pgHandler.AddMessageRecord(
                 messageId,
@@ -77,7 +77,7 @@ class PushLoop(Thread):
             # logging.debug(f"txnInfo:{txnInfo}, deviceInfo:{deviceInfo}")
             message = TransferReceiverMessage(txnInfo, deviceInfo)
             # logging.debug(f"{data.content}, {txnInfo.get('receiver')}, {message.GeneratorTitle()}, {message.GeneratorBody()}, {json.dumps(message.GeneratorData())}")
-            messageId = hashlib.md5(f"{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
+            messageId = hashlib.md5(f"{txnInfo.get('version')}:{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
             pgHandler.AddMessageRecord(
                 messageId,
                 txnInfo.get("receiver"),
