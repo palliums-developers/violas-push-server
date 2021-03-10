@@ -16,7 +16,7 @@ class PGHandler(Singleton):
     def GetDeviceInfo(self, address):
         s = self.session()
         try:
-            result = s.query(ViolasDeviceInfo).filter(ViolasDeviceInfo.address == address).first()
+            result = s.query(ViolasDeviceInfo).filter(ViolasDeviceInfo.address == address).ordre_by(ViolasDeviceInfo.id.desc()).first()
         except OperationalError:
             logging.error(f"ERROR: Database operation failed!")
             return False, None
