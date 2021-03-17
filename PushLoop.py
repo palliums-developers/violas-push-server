@@ -6,7 +6,7 @@ import hashlib
 
 from MessagePushQueue import MessagePushQueue
 from PGHandler import PGHandler
-from FCMWrapper import FCMWrapper, TransferSenderMessage, TransferReceiverMessage, NotificationMessage
+from FCMWrapper import FCMWrapper, TransferSenderMessage, TransferReceiverMessage, NotificationMessage, MultiSignMessage
 import Common
 
 class PushLoop(Thread):
@@ -90,6 +90,24 @@ class PushLoop(Thread):
 
         return
 
+    def SendMultiSignMessage(self, data):
+        pgHandler = PGHandler()
+        succ, deviceInfo = pgHandler.GetDeviceInfo(data.get("address"))
+        if not succ:
+            self.queue.AddMessage(data)
+            return
+        logging.debug(f"Get device info: {deviceInfo}")
+
+        if deviceInfo:
+            logging.debug(f"Send multisign message to device: {data.get('address')}")
+            message = MultiSignMessage(data, deviceInfo)
+
+            fcm = FCMWrapper()
+            response = fcm.SendMessage(message.MakeMessage())
+            logging.debug(f"The response of send to receiver: {response}")
+
+        return
+
     def run(self):
         logging.debug(f"Push loop thread start, thread name {self.getName()}.")
 
@@ -109,6 +127,8 @@ class PushLoop(Thread):
                 self.SendNotification(data)
             elif data.get("service") == "violas_01":
                 self.SendTransferMessage(data)
+            elif data.get("service") == "violas_06":
+                self.SendMultiSignMessage(data)
             else:
                 logging.error(f"Unknow data type!")
                 continue

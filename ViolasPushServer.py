@@ -51,3 +51,24 @@ def SubscribeTopic():
     fcm.SubscribeToTopic(topic, token)
 
     return {"code": 0}
+
+@app.route("/violas/push/multisign/broadcast", methods = ["POST"])
+def PushMultiSignBroadcast():
+    params = request.get_json()
+    sender = params.get("sender")
+    addresses = params.get("addresses")
+    signData = params.get("sign_data")
+    token = params.get("token")
+
+    for address in addresses:
+        data = {
+            "service": "violas_06",
+            "sender": sender,
+            "address": address,
+            "signData": signData,
+            "token": token
+        }
+
+        queue.AddMessage(data)
+
+    return {"code": 0}
