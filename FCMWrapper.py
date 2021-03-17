@@ -217,6 +217,55 @@ class TransferReceiverMessage(BaseMessage):
 
         return data
 
+class MultiSignMessage(BaseMessage):
+    def __init__(self, data, deviceInfo):
+        self.sender = data.get("sender")
+        self.address = data.get("address")
+        self.token = data.get("token")
+        self.signdata = data.get("signdata")
+        self.fcmToken = deviceInfo.get("fcm_token")
+        self.language = deviceInfo.get("language").lower()
+        self.platform = deviceInfo.get("platform").lower()
+
+    def MakeMessage(self):
+        message = messaging.Message(
+            notification = messaging.Notification(
+                title = self.GeneratorTitle(),
+                body = self.GeneratorBody()
+            ),
+            data = self.GeneratorData(),
+            token = self.fcmToken
+        )
+
+        message = self.SetPlatformConfig(message, self.platform)
+
+        return message
+
+    def GeneratorTitle(self):
+        titleContent = {
+            "en": "Get multi sign message.",
+            "cn": "收到多签消息。"
+        }
+
+        return f"{titleContent.get(self.language)}"
+
+    def GeneratorBody(self):
+        bodyContent = {
+            "en": "Get multi sign message from",
+            "cn": "收到多签信息，发送者"
+        }
+
+        return f"{bodyContent.get(self.language)} {self.sender}"
+
+    def GeneratorData(self):
+        data = {
+            "service": "violas_06",
+            "sign_data": self.fcmToken,
+            "token": self.token
+        }
+
+        return data
+
 class FCMWrapper:
     def init(self, cert_path):
         self.cred = credentials.Certificate(cert_path)
