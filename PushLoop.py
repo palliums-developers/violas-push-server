@@ -1,6 +1,6 @@
 from threading import Thread
 import logging
-from time import sleep
+from time import sleep, time
 import json
 import hashlib
 
@@ -106,6 +106,14 @@ class PushLoop(Thread):
             response = fcm.SendMessage(message.MakeMessage())
             logging.debug(f"The response of send to receiver: {response}")
 
+            messageId = hashlib.md5(f"{time()}:{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
+            pgHandler.AddMessageRecord(
+                messageId,
+                data.get("address"),
+                message.GeneratorTitle(),
+                message.GeneratorBody(),
+                json.dumps(message.GeneratorData())
+            )
         return
 
     def run(self):
