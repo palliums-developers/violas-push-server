@@ -38,26 +38,20 @@ class PushLoop(Thread):
         fcm = FCMWrapper()
 
         pgHandler = PGHandler()
-        succ, txnInfo = pgHandler.GetTransactionInfo(data.get("version"))
-        if not succ or txnInfo is None:
-            self.queue.AddMessage(data)
-            return
-        logging.debug(f"Get transaction info: {txnInfo}!")
-
-        succ, deviceInfo = pgHandler.GetDeviceInfo(txnInfo.get("sender"))
+        succ, deviceInfo = pgHandler.GetDeviceInfo(data.get("sender"))
         if not succ:
             self.queue.AddMessage(data)
             return
         logging.debug(f"Get sender device info: {deviceInfo}")
 
         if deviceInfo:
-            logging.debug(f"Send notifiaction to sender: {txnInfo.get('sender')}")
-            message = TransferSenderMessage(txnInfo, deviceInfo)
-            messageId = hashlib.md5(f"{txnInfo.get('version')}:{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
+            logging.debug(f"Send notifiaction to sender: {data.get('sender')}")
+            message = TransferSenderMessage(data, deviceInfo)
+            messageId = hashlib.md5(f"{data.get('version')}:{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
 
             pgHandler.AddMessageRecord(
                 messageId,
-                txnInfo.get("sender"),
+                data.get("sender"),
                 message.GeneratorTitle(),
                 message.GeneratorBody(),
                 json.dumps(message.GeneratorData())
@@ -67,20 +61,20 @@ class PushLoop(Thread):
 
         logging.debug(f"Prepare for send message to receiver!")
 
-        if txnInfo.get("status") == "Executed":
-            succ, deviceInfo = pgHandler.GetDeviceInfo(txnInfo.get("receiver"))
+        if data.get("status") == "Executed":
+            succ, deviceInfo = pgHandler.GetDeviceInfo(data.get("receiver"))
             if not succ or deviceInfo is None:
                 return
             logging.debug(f"Get receiver device info: {deviceInfo}")
 
-            logging.debug(f"Send notifiaction to receiver: {txnInfo.get('receiver')}")
-            # logging.debug(f"txnInfo:{txnInfo}, deviceInfo:{deviceInfo}")
-            message = TransferReceiverMessage(txnInfo, deviceInfo)
-            # logging.debug(f"{data.content}, {txnInfo.get('receiver')}, {message.GeneratorTitle()}, {message.GeneratorBody()}, {json.dumps(message.GeneratorData())}")
-            messageId = hashlib.md5(f"{txnInfo.get('version')}:{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
+            logging.debug(f"Send notifiaction to receiver: {data.get('receiver')}")
+            # logging.debug(f"data:{data}, deviceInfo:{deviceInfo}")
+            message = TransferReceiverMessage(data, deviceInfo)
+            # logging.debug(f"{data.content}, {data.get('receiver')}, {message.GeneratorTitle()}, {message.GeneratorBody()}, {json.dumps(message.GeneratorData())}")
+            messageId = hashlib.md5(f"{data.get('version')}:{message.GeneratorTitle()}:{message.GeneratorBody()}".encode()).hexdigest()
             pgHandler.AddMessageRecord(
                 messageId,
-                txnInfo.get("receiver"),
+                data.get("receiver"),
                 message.GeneratorTitle(),
                 message.GeneratorBody(),
                 json.dumps(message.GeneratorData())
