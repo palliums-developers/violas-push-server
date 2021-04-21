@@ -36,34 +36,6 @@ class PGHandler(Singleton):
 
         return True, info
 
-    def GetTransactionInfo(self, version):
-        s = self.session()
-        try:
-            result = s.query(ViolasTransaction).filter(ViolasTransaction.id == version + 1).first()
-        except OperationalError:
-            logging.error(f"ERROR: Database operation failed!")
-            return False, None
-        finally:
-            s.close()
-
-        if result is None:
-            return True, None
-
-        info = {
-            "version": result.id - 1,
-            "sender": result.sender,
-            "receiver": result.receiver,
-            "date": result.confirmed_time,
-            "amount": int(result.amount),
-            "currency": result.currency,
-            "gas": int(result.gas_used),
-            "gas_currency": result.gas_currency,
-            "type": result.transaction_type,
-            "status": result.status
-        }
-
-        return True, info
-
     def AddMessageRecord(self, messageId, address, title, body, data):
         s = self.session()
         try:
