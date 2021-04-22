@@ -201,7 +201,7 @@ class TransferReceiverMessage(BaseMessage):
     def GeneratorBody(self):
         bodyContent = {
             "en": "Payment address:",
-            "cn": "发款地址："
+            "cn": "付款地址："
         }
 
         return f"{bodyContent.get(self.language)} {self.address}"
